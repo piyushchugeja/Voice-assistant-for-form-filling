@@ -51,15 +51,16 @@ class HomeScreen(tk.Frame):
     def get_user(self):
         self.ID = self.ask_user_id("Please say your ID")
         try:
-            self.ID = int(self.ID)
             details = fetchRecords(getConnection(), self.ID)[0]
-            message = "ID: " + str(details[0]) + "\nFirst Name: " + details[1] + "\nLast Name: " + details[2] + "\nPhone: " + details[3] + + "\nDate of Birth: " + details[4] + "\nGender: " + details[5]
+            message = "ID: " + str(details[0]) + "\nName: " + str(details[1]) + " " + str(details[2]) + "\nDate of Birth: " + str(details[3]) + "\nPhone: " + str(details[4]) + "\nGender: " + str(details[5]) + "\n"
             messagebox.showinfo("Details", message)
-        except:
-            messagebox.showerror("Error", "Invalid ID") 
+        except Exception as e:
+            print(e)
+            messagebox.showerror("Error", "No user found with this ID")
     
     def ask_user_thread(self):
-        thread = v.ThreadWithReturnValue(target=self.ask_user).start()
+        thread = v.ThreadWithReturnValue(target=self.ask_user)
+        thread.start()
     
     def ask_user(self):
         v.speak("What would you like to do? Fill form or view details?")
@@ -201,13 +202,12 @@ class FormScreen(tk.Frame):
                 break
             elif "exit" in data or "home" in data or "back" in data:
                 self.go_to_home()
-                break
+                return
             elif "clear" in data:
                 self.clear_form()
                 break
             else:
                 self.setValues(counter, data)
-                print("Setting " + fields[counter] + " to " + data)
                 counter += 1
         v.speak("Your form has been filled. To submit, say submit or use any other command.")
         moreThread = v.ThreadWithReturnValue(target=self.more_commands)
@@ -224,23 +224,30 @@ class FormScreen(tk.Frame):
         if counter == 0:
             self.entry_firstname.delete(0, tk.END)
             self.entry_firstname.insert(0, data.capitalize().replace(" ", ""))
+            print("Setting first name to " + data)
         elif counter == 1:
             self.entry_lastname.delete(0, tk.END)
             self.entry_lastname.insert(0, data.capitalize().replace(" ", ""))
+            print("Setting last name to " + data)
         elif counter == 2:
             date = data.split()
             date = date[0][0:2] + "/" + date[0][2:] + "/" + date[1]
             self.dob_var.set(date)
+            print("Setting dob to " + date)
         elif counter == 3:
+            gender = data[0]
             if data[0] == 'm':
-                self.gender_var.set("Male")
+                gender = 'Male'
             elif data[0] == 'f':
-                self.gender_var.set("Female")
+                gender = 'Female'
             else:
-                self.gender_var.set("Other")
+                gender = 'Other'
+            self.gender_var.set(gender)
+            print("Setting gender to " + gender)
         elif counter == 4:
             self.entry_phone.delete(0, tk.END)
             self.entry_phone.insert(0, data.replace(" ", ""))
+            print("Setting phone to " + data)
     
     def more_commands(self):
         fields = ['first name', 'last name', 'date of birth', 'gender', 'phone']

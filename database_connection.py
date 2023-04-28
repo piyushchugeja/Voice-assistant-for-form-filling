@@ -36,3 +36,4 @@ def insert(conn, userDetails):
 def fetchRecords(conn, userID = None):
     query = "SELECT * FROM users " + ("WHERE userID = " + str(userID) if userID else "") + ";"
     return conn.execute(query).fetchall()
+print(fetchRecords(getConnection(), 1))
