@@ -14,5 +14,3 @@ This project is a voice-controlled form filling application built using Python a
 - PIL
 - tkcalendar
 - re
-
-## Screenshots
